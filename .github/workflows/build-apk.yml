@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches:
+      - arena/5a975c6d-exam-ai
       - arena/40e31784-exam-ai
       - arena/2d28472c-exam-ai
   workflow_dispatch:
