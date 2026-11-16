@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Exam AI Assistant</string>
+    <string name="accessibility_service_label">Exam AI Form Auto-Reader</string>
+    <string name="accessibility_service_description">Membaca soal Google Form di Google Chrome dan memilih jawaban secara otomatis menggunakan AI.</string>
+</resources>
