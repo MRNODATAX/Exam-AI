@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/floatingRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/ivFloatingIcon"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:background="@drawable/bg_floating_idle"
+        android:contentDescription="Exam AI Floating Button"
+        android:elevation="8dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_ai_assistant" />
+
+    <TextView
+        android:id="@+id/tvFloatingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="#E6101318"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="2dp"
+        android:text="Idle"
+        android:textColor="@color/txt"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

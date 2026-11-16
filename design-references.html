@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7 Referensi Desain UI &amp; Logo — Awwwards × Motion.dev × Anime.js</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090f;
+      --surface: #0f1422;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 15% 10%, rgba(59,130,246,0.12), transparent 35%),
+                  radial-gradient(circle at 85% 20%, rgba(168,85,247,0.10), transparent 35%),
+                  var(--bg);
+      color: var(--text);
+      padding: 40px 20px 80px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+    header {
+      max-width: 1120px;
+      margin: 0 auto 42px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.28);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    header p {
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 auto;
+      font-size: 0.96rem;
+    }
+    .selected-banner {
+      display: none;
+      max-width: 1280px;
+      margin: 0 auto 28px;
+      padding: 16px 24px;
+      border-radius: 16px;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+      font-weight: 600;
+      text-align: center;
+    }
+    .grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform, opacity;
+    }
+    .card:hover {
+      border-color: rgba(96, 165, 250, 0.55);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      border: 1px solid var(--border);
+    }
+    .subtitle { font-size: 0.8rem; color: var(--muted); }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-box {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+    .title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .phone {
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      min-height: 225px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+    .mock-card {
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      margin-bottom: 8px;
+    }
+    .mock-btn {
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .floating-pill {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+      cursor: grab;
+      user-select: none;
+    }
+    .palette {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .pick-btn {
+      margin-top: auto;
+      padding: 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #172033;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .pick-btn:hover { background: var(--accent); border-color: var(--accent); }
+    .pick-btn:active { transform: scale(0.98); }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Awwwards Craft × Motion.dev × Anime.js</div>
+  <h1>7 Referensi Desain UI &amp; Logo</h1>
+  <p>
+    Setiap konsep dirancang dengan standar hierarki visual, kontras, dan <em>signature floating interaction</em>.
+    Klik logo atau tombol <strong>Pilih Konsep</strong> untuk memilih desain yang paling pas.
+  </p>
+</header>
+
+<div id="selectedBanner" class="selected-banner"></div>
+
+<div class="grid">
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #1</span><span class="subtitle">Material 3 • Clean</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #2563eb, #60a5fa);">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5Z"/></svg>
+      </div>
+      <div><div class="title">1. Material 3 Spark</div><div class="subtitle">Bersih, formal, ala Google Workspace</div></div>
+    </div>
+    <div class="phone" style="background:#f8fafc; color:#0f172a;">
+      <div>
+        <div class="phone-top"><span>Exam AI</span><span>● Aktif</span></div>
+        <div class="mock-card" style="background:#e2e8f0;">Overlay &amp; Accessibility: <b>Siap</b></div>
+        <div class="mock-card" style="background:#ffffff; border:1px solid #cbd5e1;">Provider: <b>Gemini 2.5 Flash</b></div>
+      </div>
+      <div class="mock-btn" style="background:#2563eb; color:#fff;">Jalankan Floating Widget</div>
+      <div class="floating-pill" style="background:#2563eb; color:#fff;">✦ Idle</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#2563eb"></div><div class="swatch" style="background:#f8fafc"></div><div class="swatch" style="background:#10b981"></div><span>Biru Google + Putih</span></div>
+    <button class="pick-btn" onclick="selectOption(1, 'Material 3 Spark')">Pilih Konsep #1</button>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #2</span><span class="subtitle">Dark Mode • Cyber</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #0f172a, #1e1b4b); border:1px solid #38bdf8;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div><div class="title">2. Cyber Neon Dark</div><div class="subtitle">Gelap OLED, kontras tinggi, futuristik</div></div>
+    </div>
+    <div class="phone" style="background:#090d16; color:#e2e8f0;">
+      <div>
+        <div class="phone-top"><span>EXAM.AI</span><span style="color:#38bdf8;">ONLINE</span></div>
+        <div class="mock-card" style="background:#111827; border:1px solid #1e293b;">Overlay &amp; Accessibility: <b style="color:#34d399;">OK</b></div>
+        <div class="mock-card" style="background:#111827; border:1px solid #1e293b;">API: <b style="color:#38bdf8;">OmniRoute</b></div>
+      </div>
+      <div class="mock-btn" style="background:linear-gradient(90deg,#06b6d4,#3b82f6); color:#fff;">AKTIFKAN OVERLAY</div>
+      <div class="floating-pill" style="background:#0f172a; border:1px solid #38bdf8; color:#38bdf8;">◉ AI Ready</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#090d16"></div><div class="swatch" style="background:#38bdf8"></div><div class="swatch" style="background:#34d399"></div><span>Hitam OLED + Cyan Neon</span></div>
+    <button class="pick-btn" onclick="selectOption(2, 'Cyber Neon Dark')">Pilih Konsep #2</button>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #3</span><span class="subtitle">Glass • Gradient</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #7c3aed, #ec4899);">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a7 7 0 0 0-7 7v4l-2 2v1h18v-1l-2-2V9a7 7 0 0 0-7-7zm0 20a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22z"/></svg>
+      </div>
+      <div><div class="title">3. Aurora Glass</div><div class="subtitle">Gradasi ungu-pink modern ala Arobix AI</div></div>
+    </div>
+    <div class="phone" style="background:linear-gradient(160deg,#2e1065,#1e1b4b); color:#fff;">
+      <div>
+        <div class="phone-top"><span>Aurora AI</span><span>✦ Pro</span></div>
+        <div class="mock-card" style="background:rgba(255,255,255,0.12);">Status Sistem: <b>Terhubung</b></div>
+        <div class="mock-card" style="background:rgba(255,255,255,0.12);">Model: <b>Gemini / GPT-4o</b></div>
+      </div>
+      <div class="mock-btn" style="background:linear-gradient(90deg,#a855f7,#ec4899); color:#fff;">Mulai Asisten</div>
+      <div class="floating-pill" style="background:linear-gradient(135deg,#a855f7,#ec4899); color:#fff;">✦ Tap</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#7c3aed"></div><div class="swatch" style="background:#ec4899"></div><div class="swatch" style="background:#2e1065"></div><span>Ungu Aurora + Pink</span></div>
+    <button class="pick-btn" onclick="selectOption(3, 'Aurora Glass')">Pilih Konsep #3</button>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #4</span><span class="subtitle">Minimalist • Calm</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #059669, #34d399);">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div><div class="title">4. Emerald Focus</div><div class="subtitle">Hijau tenang, fokus belajar &amp; ujian</div></div>
+    </div>
+    <div class="phone" style="background:#ecfdf5; color:#064e3b;">
+      <div>
+        <div class="phone-top"><span>Exam Focus</span><span>● Siap</span></div>
+        <div class="mock-card" style="background:#d1fae5;">Izin Lengkap</div>
+        <div class="mock-card" style="background:#ffffff; border:1px solid #a7f3d0;">API Key Tersimpan</div>
+      </div>
+      <div class="mock-btn" style="background:#059669; color:#fff;">Buka Floating Button</div>
+      <div class="floating-pill" style="background:#059669; color:#fff;">✓ Jawab</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#059669"></div><div class="swatch" style="background:#ecfdf5"></div><div class="swatch" style="background:#064e3b"></div><span>Hijau Emerald + Mint</span></div>
+    <button class="pick-btn" onclick="selectOption(4, 'Emerald Focus')">Pilih Konsep #4</button>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #5</span><span class="subtitle">Stealth • Monochrome</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background:#18181b; border:1px solid #3f3f46;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fafafa" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+      </div>
+      <div><div class="title">5. Stealth Mono</div><div class="subtitle">Minimalis hitam-putih, tidak mencolok</div></div>
+    </div>
+    <div class="phone" style="background:#18181b; color:#fafafa;">
+      <div>
+        <div class="phone-top"><span>STEALTH</span><span>v1.0</span></div>
+        <div class="mock-card" style="background:#27272a;">Overlay: Active</div>
+        <div class="mock-card" style="background:#27272a;">Accessibility: Active</div>
+      </div>
+      <div class="mock-btn" style="background:#fafafa; color:#18181b;">Start Overlay</div>
+      <div class="floating-pill" style="background:#27272a; border:1px solid #52525b; color:#fafafa;">●</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#18181b"></div><div class="swatch" style="background:#52525b"></div><div class="swatch" style="background:#fafafa"></div><span>Hitam Zinc + Putih</span></div>
+    <button class="pick-btn" onclick="selectOption(5, 'Stealth Mono')">Pilih Konsep #5</button>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #6</span><span class="subtitle">Warm • Energetic</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div><div class="title">6. Bolt Amber</div><div class="subtitle">Cepat, energik, ikon petir responsif</div></div>
+    </div>
+    <div class="phone" style="background:#fffbeb; color:#78350f;">
+      <div>
+        <div class="phone-top"><span>Bolt AI</span><span>⚡ Fast</span></div>
+        <div class="mock-card" style="background:#fef3c7;">Izin Sistem: Aktif</div>
+        <div class="mock-card" style="background:#ffffff; border:1px solid #fde68a;">Model: Flash</div>
+      </div>
+      <div class="mock-btn" style="background:linear-gradient(90deg,#f59e0b,#ef4444); color:#fff;">Jalankan Sekarang</div>
+      <div class="floating-pill" style="background:#f59e0b; color:#fff;">⚡ Scan</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#f59e0b"></div><div class="swatch" style="background:#ef4444"></div><div class="swatch" style="background:#fffbeb"></div><span>Amber + Merah Hangat</span></div>
+    <button class="pick-btn" onclick="selectOption(6, 'Bolt Amber')">Pilih Konsep #6</button>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <div class="card-header"><span class="badge">Opsi #7</span><span class="subtitle">Mascot • Friendly</span></div>
+    <div class="logo-row">
+      <div class="logo-box" style="background: linear-gradient(135deg, #4f46e5, #06b6d4);">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2zM8.5 13a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+      </div>
+      <div><div class="title">7. Juno Bot Mascot</div><div class="subtitle">Ikon robot ramah &amp; modern ala Juno AI</div></div>
+    </div>
+    <div class="phone" style="background:#eef2ff; color:#1e1b4b;">
+      <div>
+        <div class="phone-top"><span>Juno Exam</span><span>🤖 Ready</span></div>
+        <div class="mock-card" style="background:#e0e7ff;">Chrome Form Detector: <b>On</b></div>
+        <div class="mock-card" style="background:#ffffff; border:1px solid #c7d2fe;">Gemini / OmniRoute</div>
+      </div>
+      <div class="mock-btn" style="background:#4f46e5; color:#fff;">Tampilkan Asisten</div>
+      <div class="floating-pill" style="background:#4f46e5; color:#fff;">🤖 Tanya</div>
+    </div>
+    <div class="palette"><div class="swatch" style="background:#4f46e5"></div><div class="swatch" style="background:#06b6d4"></div><div class="swatch" style="background:#eef2ff"></div><span>Indigo + Cyan Ramah</span></div>
+    <button class="pick-btn" onclick="selectOption(7, 'Juno Bot Mascot')">Pilih Konsep #7</button>
+  </div>
+
+</div>
+
+<script>
+  // Staggered entrance & spring-like micro-interaction (respecting prefers-reduced-motion)
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    document.querySelectorAll('.card').forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(18px)';
+      setTimeout(() => {
+        card.style.transition = 'opacity 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 60 * i);
+    });
+  }
+
+  function selectOption(num, name) {
+    const banner = document.getElementById('selectedBanner');
+    banner.style.display = 'block';
+    banner.textContent = 'Anda memilih Opsi #' + num + ' (' + name + '). Silakan beri tahu saya di chat agar saya terapkan ke proyek Android!';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
