@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
 import com.example.examai.network.AiApiHelper
+import com.example.examai.util.PrefsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -82,6 +83,11 @@ class FormAutoAccessibilityService : AccessibilityService() {
                     val freshRoot = getChromeRootNode() ?: rootNode
                     val applied = applyAnswerToScreen(freshRoot, aiAnswer)
                     if (applied) {
+                        PrefsManager.addHistory(
+                            this@FormAutoAccessibilityService,
+                            screenText.lines().firstOrNull().orEmpty(),
+                            aiAnswer
+                        )
                         onStatus(ProcessStatus.SUCCESS)
                         showToast("Dipilih: $aiAnswer")
                     } else {

@@ -16,12 +16,22 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.example.examai.R
+import com.example.examai.network.AiApiHelper
 import com.example.examai.service.FormAutoAccessibilityService.ProcessStatus
+import com.example.examai.util.PrefsManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class FloatingWidgetService : Service() {
@@ -34,10 +44,15 @@ class FloatingWidgetService : Service() {
     }
 
     private lateinit var windowManager: WindowManager
+    private lateinit var params: WindowManager.LayoutParams
     private var floatingView: View? = null
     private lateinit var ivIcon: ImageView
     private lateinit var tvStatus: TextView
+    private lateinit var layoutMiniPanel: LinearLayout
+    private lateinit var tvMiniChatReply: TextView
+    private lateinit var etMiniChat: EditText
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -52,7 +67,7 @@ class FloatingWidgetService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Exam AI Floating Overlay",
+                "ExamAI Floating Overlay",
                 NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(NotificationManager::class.java)
@@ -60,8 +75,8 @@ class FloatingWidgetService : Service() {
         }
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Exam AI Assistant Aktif")
-            .setContentText("Ketuk ikon melayang di Chrome untuk membaca & menjawab soal.")
+            .setContentTitle("ExamAI Assistant Aktif")
+            .setContentText("Ketuk ikon melayang di Chrome untuk Auto-Answer atau Mini Chat.")
             .setSmallIcon(R.drawable.ic_ai_assistant)
             .setOngoing(true)
             .build()
@@ -77,8 +92,19 @@ class FloatingWidgetService : Service() {
         val view = floatingView ?: return
         ivIcon = view.findViewById(R.id.ivFloatingIcon)
         tvStatus = view.findViewById(R.id.tvFloatingStatus)
+        layoutMiniPanel = view.findViewById(R.id.layoutMiniPanel)
+        tvMiniChatReply = view.findViewById(R.id.tvMiniChatReply)
+        etMiniChat = view.findViewById(R.id.etMiniChat)
 
-        val params = WindowManager.LayoutParams(
+        val fabContainer = view.findViewById<View>(R.id.fabContainer)
+        val btnCloseMini = view.findViewById<View>(R.id.btnCloseMini)
+        val btnMiniAutoAnswer = view.findViewById<Button>(R.id.btnMiniAutoAnswer)
+        val btnMiniSend = view.findViewById<Button>(R.id.btnMiniSend)
+
+        val opacity = PrefsManager.getOpacity(this) / 100f
+        fabContainer.alpha = opacity
+
+        params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -96,7 +122,7 @@ class FloatingWidgetService : Service() {
         var initialTouchY = 0f
         var isClick = true
 
-        view.setOnTouchListener { _, event ->
+        fabContainer.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     initialX = params.x
@@ -121,7 +147,7 @@ class FloatingWidgetService : Service() {
 
                 MotionEvent.ACTION_UP -> {
                     if (isClick) {
-                        onFloatingButtonClicked()
+                        toggleMiniPanel()
                     }
                     true
                 }
@@ -130,11 +156,49 @@ class FloatingWidgetService : Service() {
             }
         }
 
+        btnCloseMini.setOnClickListener { closeMiniPanel() }
+
+        btnMiniAutoAnswer.setOnClickListener {
+            closeMiniPanel()
+            triggerAutoAnswer()
+        }
+
+        btnMiniSend.setOnClickListener {
+            val prompt = etMiniChat.text.toString().trim()
+            if (prompt.isEmpty()) return@setOnClickListener
+            etMiniChat.setText("")
+            tvMiniChatReply.text = "Berpikir..."
+            serviceScope.launch {
+                val res = AiApiHelper.askChat(this@FloatingWidgetService, prompt)
+                res.onSuccess { reply ->
+                    tvMiniChatReply.text = reply
+                }.onFailure { err ->
+                    tvMiniChatReply.text = "Error: ${err.localizedMessage}"
+                }
+            }
+        }
+
         windowManager.addView(view, params)
         updateStatusUi(ProcessStatus.IDLE)
     }
 
-    private fun onFloatingButtonClicked() {
+    private fun toggleMiniPanel() {
+        if (layoutMiniPanel.visibility == View.VISIBLE) {
+            closeMiniPanel()
+        } else {
+            layoutMiniPanel.visibility = View.VISIBLE
+            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+            floatingView?.let { windowManager.updateViewLayout(it, params) }
+        }
+    }
+
+    private fun closeMiniPanel() {
+        layoutMiniPanel.visibility = View.GONE
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        floatingView?.let { windowManager.updateViewLayout(it, params) }
+    }
+
+    private fun triggerAutoAnswer() {
         val accessibilityService = FormAutoAccessibilityService.instance
         if (accessibilityService == null) {
             updateStatusUi(ProcessStatus.ERROR)
@@ -184,6 +248,7 @@ class FloatingWidgetService : Service() {
         super.onDestroy()
         isRunning = false
         mainHandler.removeCallbacksAndMessages(null)
+        serviceScope.cancel()
         floatingView?.let {
             if (it.isAttachedToWindow) {
                 windowManager.removeView(it)

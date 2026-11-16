@@ -2,6 +2,17 @@ package com.example.examai.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import org.json.JSONArray
+import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+data class AnswerHistoryItem(
+    val timestamp: String,
+    val question: String,
+    val answer: String
+)
 
 object PrefsManager {
     private const val PREFS_NAME = "exam_ai_prefs"
@@ -9,6 +20,8 @@ object PrefsManager {
     private const val KEY_API_KEY = "ai_api_key"
     private const val KEY_MODEL = "ai_model"
     private const val KEY_BASE_URL = "ai_base_url"
+    private const val KEY_OPACITY = "floating_opacity"
+    private const val KEY_HISTORY = "answer_history"
 
     const val PROVIDER_GEMINI = "GEMINI"
     const val PROVIDER_OMNIROUTE = "OMNIROUTE"
@@ -59,5 +72,59 @@ object PrefsManager {
             PROVIDER_STANDARD -> "https://api.openai.com/v1/chat/completions"
             else -> ""
         }
+    }
+
+    fun saveOpacity(context: Context, opacityPercent: Int) {
+        getPrefs(context).edit().putInt(KEY_OPACITY, opacityPercent.coerceIn(30, 100)).apply()
+    }
+
+    fun getOpacity(context: Context): Int {
+        return getPrefs(context).getInt(KEY_OPACITY, 100).coerceIn(30, 100)
+    }
+
+    fun addHistory(context: Context, questionSnippet: String, answer: String) {
+        val raw = getPrefs(context).getString(KEY_HISTORY, "[]") ?: "[]"
+        val arr = try {
+            JSONArray(raw)
+        } catch (_: Exception) {
+            JSONArray()
+        }
+        val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        val item = JSONObject().apply {
+            put("timestamp", time)
+            put("question", questionSnippet.take(120))
+            put("answer", answer)
+        }
+        val updated = JSONArray().apply {
+            put(item)
+            for (i in 0 until minOf(arr.length(), 29)) {
+                put(arr.get(i))
+            }
+        }
+        getPrefs(context).edit().putString(KEY_HISTORY, updated.toString()).apply()
+    }
+
+    fun getHistory(context: Context): List<AnswerHistoryItem> {
+        val raw = getPrefs(context).getString(KEY_HISTORY, "[]") ?: "[]"
+        val list = mutableListOf<AnswerHistoryItem>()
+        try {
+            val arr = JSONArray(raw)
+            for (i in 0 until arr.length()) {
+                val obj = arr.getJSONObject(i)
+                list.add(
+                    AnswerHistoryItem(
+                        timestamp = obj.optString("timestamp", ""),
+                        question = obj.optString("question", ""),
+                        answer = obj.optString("answer", "")
+                    )
+                )
+            }
+        } catch (_: Exception) {
+        }
+        return list
+    }
+
+    fun clearHistory(context: Context) {
+        getPrefs(context).edit().remove(KEY_HISTORY).apply()
     }
 }
