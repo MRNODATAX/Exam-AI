@@ -1,10 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="28dp"
-    android:height="28dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+
+    <!-- Outer circle -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M12,2a2,2 0 0,1 2,2c0,0.74 -0.4,1.39 -1,1.73V7h1a7,7 0 0,1 7,7h1a1,1 0 0,1 1,1v3a1,1 0 0,1 -1,1h-1v1a2,2 0 0,1 -2,2H5a2,2 0 0,1 -2,-2v-1H2a1,1 0 0,1 -1,-1v-3a1,1 0 0,1 1,-1h1a7,7 0 0,1 7,-7h1V5.73c-0.6,-0.34 -1,-0.99 -1,-1.73a2,2 0 0,1 2,-2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z" />
+        android:pathData="M48,24 A24,24 0 1,1 47.99,24 Z"
+        android:strokeColor="#D7DBE2"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round" />
+
+    <!-- Tilted orbit ring (-20 deg around 48,48) -->
+    <group
+        android:pivotX="48"
+        android:pivotY="48"
+        android:rotation="-20">
+        <path
+            android:pathData="M11,48 A37,11 0 1,0 85,48 A37,11 0 1,0 11,48 Z"
+            android:strokeColor="#8A919C"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- Orbiting dot -->
+    <path
+        android:fillColor="#D7DBE2"
+        android:pathData="M82.8,36.8 A2.8,2.8 0 1,1 82.79,36.8 Z" />
+
+    <!-- Robot visor -->
+    <path
+        android:fillColor="#101318"
+        android:pathData="M43,37 L53,37 A8,8 0 0,1 61,45 L61,51 A8,8 0 0,1 53,59 L43,59 A8,8 0 0,1 35,51 L35,45 A8,8 0 0,1 43,37 Z"
+        android:strokeColor="#D7DBE2"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round" />
+
+    <!-- Left gradient eye -->
+    <path android:pathData="M43.5,45 A3,3 0 1,1 43.49,45 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="46.5"
+                android:endY="51"
+                android:startX="40.5"
+                android:startY="45"
+                android:type="linear">
+                <item android:color="#7C6CF6" android:offset="0.0" />
+                <item android:color="#EC4899" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Right gradient eye -->
+    <path android:pathData="M52.5,45 A3,3 0 1,1 52.49,45 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="55.5"
+                android:endY="51"
+                android:startX="49.5"
+                android:startY="45"
+                android:type="linear">
+                <item android:color="#7C6CF6" android:offset="0.0" />
+                <item android:color="#EC4899" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
 </vector>

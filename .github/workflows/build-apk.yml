@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches:
+      - arena/5a975c6d-exam-ai
       - arena/40e31784-exam-ai
       - arena/2d28472c-exam-ai
   workflow_dispatch:
@@ -16,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -29,21 +30,24 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Build Debug APK
+      - name: Build APK
         run: gradle assembleDebug --no-daemon
+
+      - name: Rename APK to Exam-AI.apk
+        run: cp app/build/outputs/apk/debug/Exam-AI-debug.apk Exam-AI.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ExamAI-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Exam-AI
+          path: Exam-AI.apk
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0-debug
-          name: ExamAI Debug APK
-          files: app/build/outputs/apk/debug/app-debug.apk
-          prerelease: true
+          tag_name: v1.0
+          name: Exam-AI
+          files: Exam-AI.apk
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

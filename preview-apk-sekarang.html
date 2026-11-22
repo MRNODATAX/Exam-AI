@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview UI APK Exam-AI Sekarang</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #07090d;
+      color: #F2F4F7;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 28px 16px 48px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .phone {
+      width: 360px;
+      height: 740px;
+      background: #0B0D10;
+      border-radius: 36px;
+      border: 2px solid #262B33;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.65);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px 10px;
+    }
+    .logo-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #101318;
+      border: 1px solid #2A2E35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wm-title { font-family: Georgia, serif; font-size: 17px; font-weight: 700; }
+    .wm-sub { font-family: Georgia, serif; font-style: italic; font-size: 10.5px; color: #616A76; }
+    .content { flex: 1; padding: 0 20px 16px; overflow-y: auto; }
+    .card {
+      background: #14171C;
+      border: 1px solid #262B33;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .micro {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      color: #616A76;
+      text-transform: uppercase;
+    }
+    .live-row { display: flex; align-items: center; gap: 12px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #34D399; }
+    .btn-input {
+      width: 100%;
+      height: 42px;
+      margin-top: 8px;
+      background: #1B2026;
+      border: 1px solid #262B33;
+      border-radius: 12px;
+      color: #F2F4F7;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-grad {
+      width: 100%;
+      height: 46px;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #7C6CF6, #EC4899);
+      border-radius: 12px;
+      color: #F2F4F7;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav {
+      height: 56px;
+      background: #0E1114;
+      border-top: 1px solid #262B33;
+      display: flex;
+      align-items: center;
+    }
+    .nav div {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: #616A76;
+    }
+    .nav div.active { color: #F2F4F7; font-weight: 600; }
+
+    /* Floating Preview */
+    .floating-stage {
+      width: 340px;
+      background: #14171C;
+      border: 1px solid #262B33;
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .mini-panel {
+      width: 270px;
+      background: #14171C;
+      border: 1px solid #262B33;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .fab-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .fab {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #101318;
+      border: 2px solid #7C6CF6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .fab-status {
+      background: rgba(16,19,24,0.9);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 9.5px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: MainActivity -->
+  <div class="phone">
+    <div class="header">
+      <div class="logo-box">
+        <svg width="24" height="24" viewBox="0 0 96 96" fill="none" stroke-linecap="round">
+          <defs><linearGradient id="gv1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C6CF6"/><stop offset="1" stop-color="#EC4899"/></linearGradient></defs>
+          <circle cx="48" cy="48" r="24" stroke="#D7DBE2" stroke-width="2.4"/>
+          <ellipse cx="48" cy="48" rx="37" ry="11" stroke="#8A919C" stroke-width="1.8" transform="rotate(-20 48 48)"/>
+          <circle cx="82.8" cy="39.6" r="2.8" fill="#D7DBE2"/>
+          <rect x="35" y="37" width="26" height="22" rx="8" fill="#101318" stroke="#D7DBE2" stroke-width="2.4"/>
+          <circle cx="43.5" cy="48" r="3" fill="url(#gv1)"/>
+          <circle cx="52.5" cy="48" r="3" fill="url(#gv1)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="wm-title">ExamAI ✦</div>
+        <div class="wm-sub">by nodata</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card live-row">
+        <div class="dot"></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;">Model AI Online</div>
+          <div style="font-size:10px;color:#616A76;">GEMINI · gemini-2.5-flash</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="micro">IZIN SISTEM</div>
+        <div style="margin-top:10px;font-size:13px;font-weight:700;color:#34D399;">Izin Overlay: Aktif</div>
+        <div class="btn-input">Aktifkan Izin Overlay</div>
+        <div style="margin-top:14px;font-size:13px;font-weight:700;color:#34D399;">Accessibility Service: Aktif</div>
+        <div class="btn-input">Buka Pengaturan Accessibility</div>
+      </div>
+
+      <div class="card">
+        <div class="micro">FLOATING WIDGET</div>
+        <div class="btn-grad">Jalankan Floating Widget</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <div class="active">Beranda</div>
+      <div>Auto</div>
+      <div>Chat</div>
+      <div>Laporan</div>
+      <div>Atur</div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Floating Mini-Panel & Logo -->
+  <div class="floating-stage">
+    <div style="width:100%;font-size:12px;color:#9AA3AF;margin-bottom:4px;">
+      Preview Floating Mini-Panel &amp; Logo (#orb) di atas Chrome:
+    </div>
+    <div class="mini-panel">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="logo-box" style="width:22px;height:22px;border-radius:7px;">
+          <svg width="14" height="14" viewBox="0 0 96 96" fill="none" stroke-linecap="round">
+            <circle cx="48" cy="48" r="24" stroke="#D7DBE2" stroke-width="2.4"/>
+            <rect x="35" y="37" width="26" height="22" rx="8" fill="#101318" stroke="#D7DBE2" stroke-width="2.4"/>
+            <circle cx="43.5" cy="48" r="3" fill="#7C6CF6"/>
+            <circle cx="52.5" cy="48" r="3" fill="#EC4899"/>
+          </svg>
+        </div>
+        <div style="font-size:11px;font-weight:700;flex:1;">ExamAI · Mini Panel</div>
+        <div style="font-size:13px;color:#616A76;">✕</div>
+      </div>
+      <div class="btn-grad" style="height:36px;font-size:12px;margin-top:10px;">⚡ Auto-Answer Chrome</div>
+      <div class="btn-input" style="height:34px;font-size:11.5px;margin-top:6px;">📷 Screenshot &amp; Cari di Google</div>
+      <div class="btn-input" style="height:auto;padding:8px;font-size:11px;color:#9AA3AF;justify-content:flex-start;margin-top:8px;">
+        Tanya cepat atau tekan Auto-Answer di atas.
+      </div>
+    </div>
+
+    <div class="fab-wrap">
+      <div class="fab">
+        <svg width="34" height="34" viewBox="0 0 96 96" fill="none" stroke-linecap="round">
+          <defs><linearGradient id="gv2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C6CF6"/><stop offset="1" stop-color="#EC4899"/></linearGradient></defs>
+          <circle cx="48" cy="48" r="24" stroke="#D7DBE2" stroke-width="2.4"/>
+          <ellipse cx="48" cy="48" rx="37" ry="11" stroke="#8A919C" stroke-width="1.8" transform="rotate(-20 48 48)"/>
+          <circle cx="82.8" cy="39.6" r="2.8" fill="#D7DBE2"/>
+          <rect x="35" y="37" width="26" height="22" rx="8" fill="#101318" stroke="#D7DBE2" stroke-width="2.4"/>
+          <circle cx="43.5" cy="48" r="3" fill="url(#gv2)"/>
+          <circle cx="52.5" cy="48" r="3" fill="url(#gv2)"/>
+        </svg>
+      </div>
+      <div class="fab-status">Idle</div>
+    </div>
+  </div>
+
+</body>
+</html>

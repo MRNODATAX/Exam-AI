@@ -6,22 +6,39 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.PixelFormat
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Base64
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import java.io.ByteArrayOutputStream
 import androidx.core.app.NotificationCompat
 import com.example.examai.R
+import com.example.examai.network.AiApiHelper
 import com.example.examai.service.FormAutoAccessibilityService.ProcessStatus
+import com.example.examai.ui.CropOverlayView
+import com.example.examai.util.PrefsManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class FloatingWidgetService : Service() {
@@ -34,10 +51,17 @@ class FloatingWidgetService : Service() {
     }
 
     private lateinit var windowManager: WindowManager
+    private lateinit var params: WindowManager.LayoutParams
     private var floatingView: View? = null
     private lateinit var ivIcon: ImageView
     private lateinit var tvStatus: TextView
+    private lateinit var layoutMiniPanel: LinearLayout
+    private lateinit var layoutFloatingWebView: LinearLayout
+    private lateinit var webViewGoogle: WebView
+    private lateinit var tvMiniChatReply: TextView
+    private lateinit var etMiniChat: EditText
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -52,7 +76,7 @@ class FloatingWidgetService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Exam AI Floating Overlay",
+                "ExamAI Floating Overlay",
                 NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(NotificationManager::class.java)
@@ -60,8 +84,8 @@ class FloatingWidgetService : Service() {
         }
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Exam AI Assistant Aktif")
-            .setContentText("Ketuk ikon melayang di Chrome untuk membaca & menjawab soal.")
+            .setContentTitle("ExamAI Assistant Aktif")
+            .setContentText("Ketuk ikon melayang di Chrome untuk Auto-Answer atau Mini Chat.")
             .setSmallIcon(R.drawable.ic_ai_assistant)
             .setOngoing(true)
             .build()
@@ -77,8 +101,25 @@ class FloatingWidgetService : Service() {
         val view = floatingView ?: return
         ivIcon = view.findViewById(R.id.ivFloatingIcon)
         tvStatus = view.findViewById(R.id.tvFloatingStatus)
+        layoutMiniPanel = view.findViewById(R.id.layoutMiniPanel)
+        layoutFloatingWebView = view.findViewById(R.id.layoutFloatingWebView)
+        webViewGoogle = view.findViewById(R.id.webViewGoogle)
+        webViewGoogle.settings.javaScriptEnabled = true
+        webViewGoogle.webViewClient = WebViewClient()
+        tvMiniChatReply = view.findViewById(R.id.tvMiniChatReply)
+        etMiniChat = view.findViewById(R.id.etMiniChat)
 
-        val params = WindowManager.LayoutParams(
+        val fabContainer = view.findViewById<View>(R.id.fabContainer)
+        val btnCloseMini = view.findViewById<View>(R.id.btnCloseMini)
+        val btnCloseWebView = view.findViewById<View>(R.id.btnCloseWebView)
+        val btnMiniAutoAnswer = view.findViewById<Button>(R.id.btnMiniAutoAnswer)
+        val btnMiniScreenshotGoogle = view.findViewById<Button>(R.id.btnMiniScreenshotGoogle)
+        val btnMiniSend = view.findViewById<Button>(R.id.btnMiniSend)
+
+        val opacity = PrefsManager.getOpacity(this) / 100f
+        fabContainer.alpha = opacity
+
+        params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -96,7 +137,7 @@ class FloatingWidgetService : Service() {
         var initialTouchY = 0f
         var isClick = true
 
-        view.setOnTouchListener { _, event ->
+        fabContainer.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     initialX = params.x
@@ -121,7 +162,7 @@ class FloatingWidgetService : Service() {
 
                 MotionEvent.ACTION_UP -> {
                     if (isClick) {
-                        onFloatingButtonClicked()
+                        toggleMiniPanel()
                     }
                     true
                 }
@@ -130,11 +171,59 @@ class FloatingWidgetService : Service() {
             }
         }
 
+        btnCloseMini.setOnClickListener { closeMiniPanel() }
+        btnCloseWebView.setOnClickListener {
+            layoutFloatingWebView.visibility = View.GONE
+            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            floatingView?.let { windowManager.updateViewLayout(it, params) }
+        }
+
+        btnMiniAutoAnswer.setOnClickListener {
+            closeMiniPanel()
+            triggerAutoAnswer()
+        }
+
+        btnMiniScreenshotGoogle.setOnClickListener {
+            closeMiniPanel()
+            triggerScreenshotAndGoogle()
+        }
+
+        btnMiniSend.setOnClickListener {
+            val prompt = etMiniChat.text.toString().trim()
+            if (prompt.isEmpty()) return@setOnClickListener
+            etMiniChat.setText("")
+            tvMiniChatReply.text = "Berpikir..."
+            serviceScope.launch {
+                val res = AiApiHelper.askChat(this@FloatingWidgetService, prompt)
+                res.onSuccess { reply ->
+                    tvMiniChatReply.text = reply
+                }.onFailure { err ->
+                    tvMiniChatReply.text = "Error: ${err.localizedMessage}"
+                }
+            }
+        }
+
         windowManager.addView(view, params)
         updateStatusUi(ProcessStatus.IDLE)
     }
 
-    private fun onFloatingButtonClicked() {
+    private fun toggleMiniPanel() {
+        if (layoutMiniPanel.visibility == View.VISIBLE) {
+            closeMiniPanel()
+        } else {
+            layoutMiniPanel.visibility = View.VISIBLE
+            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+            floatingView?.let { windowManager.updateViewLayout(it, params) }
+        }
+    }
+
+    private fun closeMiniPanel() {
+        layoutMiniPanel.visibility = View.GONE
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        floatingView?.let { windowManager.updateViewLayout(it, params) }
+    }
+
+    private fun triggerAutoAnswer() {
         val accessibilityService = FormAutoAccessibilityService.instance
         if (accessibilityService == null) {
             updateStatusUi(ProcessStatus.ERROR)
@@ -151,6 +240,78 @@ class FloatingWidgetService : Service() {
                 updateStatusUi(status)
             }
         }
+    }
+
+    private fun triggerScreenshotAndGoogle() {
+        val accessibilityService = FormAutoAccessibilityService.instance
+        if (accessibilityService == null) {
+            updateStatusUi(ProcessStatus.ERROR)
+            Toast.makeText(applicationContext, "Accessibility Service belum aktif!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        updateStatusUi(ProcessStatus.LOADING)
+        accessibilityService.captureScreenBitmap { bitmap ->
+            if (bitmap == null) {
+                mainHandler.post { updateStatusUi(ProcessStatus.ERROR) }
+                return@captureScreenBitmap
+            }
+            mainHandler.post { showCropOverlay(bitmap) }
+        }
+    }
+
+    private fun showCropOverlay(fullBitmap: Bitmap) {
+        val cropParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            PixelFormat.TRANSLUCENT
+        )
+        var cropView: CropOverlayView? = null
+        cropView = CropOverlayView(
+            context = this,
+            fullBitmap = fullBitmap,
+            onCropConfirmed = { croppedBitmap, action ->
+                cropView?.let { windowManager.removeView(it) }
+                val stream = ByteArrayOutputStream()
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+                val base64 = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+
+                serviceScope.launch {
+                    if (action == CropOverlayView.CropAction.ASK_AI) {
+                        val res = AiApiHelper.askVisionAnswer(this@FloatingWidgetService, base64)
+                        res.onSuccess { answer ->
+                            updateStatusUi(ProcessStatus.SUCCESS)
+                            layoutMiniPanel.visibility = View.VISIBLE
+                            tvMiniChatReply.text = answer
+                            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                            floatingView?.let { windowManager.updateViewLayout(it, params) }
+                        }.onFailure { err ->
+                            updateStatusUi(ProcessStatus.ERROR)
+                            Toast.makeText(applicationContext, "Gagal AI: ${err.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        val res = AiApiHelper.extractQuestionFromImage(this@FloatingWidgetService, base64)
+                        res.onSuccess { query ->
+                            updateStatusUi(ProcessStatus.SUCCESS)
+                            val url = "https://www.google.com/search?q=" + Uri.encode(query)
+                            layoutFloatingWebView.visibility = View.VISIBLE
+                            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                            floatingView?.let { windowManager.updateViewLayout(it, params) }
+                            webViewGoogle.loadUrl(url)
+                        }.onFailure { err ->
+                            updateStatusUi(ProcessStatus.ERROR)
+                            Toast.makeText(applicationContext, "Gagal Vision: ${err.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            },
+            onCancelled = {
+                cropView?.let { windowManager.removeView(it) }
+                updateStatusUi(ProcessStatus.IDLE)
+            }
+        )
+        windowManager.addView(cropView, cropParams)
     }
 
     private fun updateStatusUi(status: ProcessStatus) {
@@ -184,6 +345,7 @@ class FloatingWidgetService : Service() {
         super.onDestroy()
         isRunning = false
         mainHandler.removeCallbacksAndMessages(null)
+        serviceScope.cancel()
         floatingView?.let {
             if (it.isAttachedToWindow) {
                 windowManager.removeView(it)
