@@ -47,7 +47,25 @@ object AiApiHelper {
         )
     }
 
+    suspend fun askVisionAnswer(context: Context, base64Jpeg: String): Result<String> =
+        callGeminiVision(
+            context,
+            base64Jpeg,
+            "Jawab pertanyaan atau soal pada gambar ini secara singkat, jelas, dan akurat dalam Bahasa Indonesia."
+        )
+
     suspend fun extractQuestionFromImage(context: Context, base64Jpeg: String): Result<String> =
+        callGeminiVision(
+            context,
+            base64Jpeg,
+            "Baca teks pertanyaan utama dari gambar layar ini untuk dicari di Google. Balas HANYA dengan kalimat pertanyaan singkatnya saja tanpa penjelasan."
+        )
+
+    private suspend fun callGeminiVision(
+        context: Context,
+        base64Jpeg: String,
+        promptText: String
+    ): Result<String> =
         withContext(Dispatchers.IO) {
             val apiKey = PrefsManager.getApiKey(context)
             if (apiKey.isBlank()) {
@@ -62,7 +80,7 @@ object AiApiHelper {
                     put(JSONObject().apply {
                         put("role", "user")
                         put("parts", JSONArray().apply {
-                            put(JSONObject().put("text", "Baca teks pertanyaan utama dari gambar layar ini untuk dicari di Google. Balas HANYA dengan kalimat pertanyaan singkatnya saja tanpa penjelasan."))
+                            put(JSONObject().put("text", promptText))
                             put(JSONObject().put("inlineData", JSONObject().apply {
                                 put("mimeType", "image/jpeg")
                                 put("data", base64Jpeg)

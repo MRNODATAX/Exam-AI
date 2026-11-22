@@ -32,6 +32,7 @@ import androidx.core.app.NotificationCompat
 import com.example.examai.R
 import com.example.examai.network.AiApiHelper
 import com.example.examai.service.FormAutoAccessibilityService.ProcessStatus
+import com.example.examai.ui.CropOverlayView
 import com.example.examai.util.PrefsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -254,24 +255,63 @@ class FloatingWidgetService : Service() {
                 mainHandler.post { updateStatusUi(ProcessStatus.ERROR) }
                 return@captureScreenBitmap
             }
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream)
-            val base64 = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
-            serviceScope.launch {
-                val res = AiApiHelper.extractQuestionFromImage(this@FloatingWidgetService, base64)
-                res.onSuccess { query ->
-                    updateStatusUi(ProcessStatus.SUCCESS)
-                    val url = "https://www.google.com/search?q=" + Uri.encode(query)
-                    layoutFloatingWebView.visibility = View.VISIBLE
-                    params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
-                    floatingView?.let { windowManager.updateViewLayout(it, params) }
-                    webViewGoogle.loadUrl(url)
-                }.onFailure { err ->
-                    updateStatusUi(ProcessStatus.ERROR)
-                    Toast.makeText(applicationContext, "Gagal Vision: ${err.localizedMessage}", Toast.LENGTH_SHORT).show()
-                }
-            }
+            mainHandler.post { showCropOverlay(bitmap) }
         }
+    }
+
+    private fun showCropOverlay(fullBitmap: Bitmap) {
+        val cropParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            PixelFormat.TRANSLUCENT
+        )
+        var cropView: CropOverlayView? = null
+        cropView = CropOverlayView(
+            context = this,
+            fullBitmap = fullBitmap,
+            onCropConfirmed = { croppedBitmap, action ->
+                cropView?.let { windowManager.removeView(it) }
+                val stream = ByteArrayOutputStream()
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+                val base64 = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+
+                serviceScope.launch {
+                    if (action == CropOverlayView.CropAction.ASK_AI) {
+                        val res = AiApiHelper.askVisionAnswer(this@FloatingWidgetService, base64)
+                        res.onSuccess { answer ->
+                            updateStatusUi(ProcessStatus.SUCCESS)
+                            layoutMiniPanel.visibility = View.VISIBLE
+                            tvMiniChatReply.text = answer
+                            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                            floatingView?.let { windowManager.updateViewLayout(it, params) }
+                        }.onFailure { err ->
+                            updateStatusUi(ProcessStatus.ERROR)
+                            Toast.makeText(applicationContext, "Gagal AI: ${err.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        val res = AiApiHelper.extractQuestionFromImage(this@FloatingWidgetService, base64)
+                        res.onSuccess { query ->
+                            updateStatusUi(ProcessStatus.SUCCESS)
+                            val url = "https://www.google.com/search?q=" + Uri.encode(query)
+                            layoutFloatingWebView.visibility = View.VISIBLE
+                            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+                            floatingView?.let { windowManager.updateViewLayout(it, params) }
+                            webViewGoogle.loadUrl(url)
+                        }.onFailure { err ->
+                            updateStatusUi(ProcessStatus.ERROR)
+                            Toast.makeText(applicationContext, "Gagal Vision: ${err.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            },
+            onCancelled = {
+                cropView?.let { windowManager.removeView(it) }
+                updateStatusUi(ProcessStatus.IDLE)
+            }
+        )
+        windowManager.addView(cropView, cropParams)
     }
 
     private fun updateStatusUi(status: ProcessStatus) {
