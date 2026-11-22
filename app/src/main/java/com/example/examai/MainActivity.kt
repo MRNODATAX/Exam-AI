@@ -1,13 +1,20 @@
 package com.example.examai
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -92,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initViews()
+        applyBrandPolish()
         setupSplash()
         setupNavigation()
         setupProviderSpinner()
@@ -160,6 +168,30 @@ class MainActivity : AppCompatActivity() {
         val btnEnterApp = findViewById<Button>(R.id.btnEnterApp)
         val tvHeaderGreeting = findViewById<TextView>(R.id.tvHeaderGreeting)
 
+        val ivSplashLogo = findViewById<View>(R.id.ivSplashLogo)
+        val tvSplashWordmark = findViewById<TextView>(R.id.tvSplashWordmark)
+        applyGradientText(tvSplashWordmark)
+
+        ivSplashLogo.scaleX = 0.7f
+        ivSplashLogo.scaleY = 0.7f
+        ivSplashLogo.alpha = 0f
+        ivSplashLogo.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .alpha(1f)
+            .setDuration(550)
+            .setInterpolator(OvershootInterpolator(1.4f))
+            .start()
+
+        tvSplashWordmark.translationY = 18f
+        tvSplashWordmark.alpha = 0f
+        tvSplashWordmark.animate()
+            .translationY(0f)
+            .alpha(1f)
+            .setStartDelay(200)
+            .setDuration(450)
+            .start()
+
         val savedName = PrefsManager.getUserName(this)
         if (savedName.isNotEmpty()) {
             tvHeaderGreeting.text = "by nodata · Halo, $savedName"
@@ -196,7 +228,16 @@ class MainActivity : AppCompatActivity() {
         val navs = listOf(navHome, navAuto, navChat, navLaporan, navSettings)
 
         fun selectTab(index: Int) {
-            tabs.forEachIndexed { i, v -> v.visibility = if (i == index) View.VISIBLE else View.GONE }
+            tabs.forEachIndexed { i, v ->
+                if (i == index) {
+                    v.visibility = View.VISIBLE
+                    v.alpha = 0f
+                    v.translationY = 14f
+                    v.animate().alpha(1f).translationY(0f).setDuration(220).start()
+                } else {
+                    v.visibility = View.GONE
+                }
+            }
             navs.forEachIndexed { i, b ->
                 b.setTextColor(
                     ContextCompat.getColor(
@@ -410,6 +451,42 @@ class MainActivity : AppCompatActivity() {
             "Hentikan Floating Widget"
         } else {
             "Jalankan Floating Widget"
+        }
+    }
+
+    private fun applyBrandPolish() {
+        val tvHeaderWordmark = findViewById<TextView>(R.id.tvHeaderWordmark)
+        applyGradientText(tvHeaderWordmark)
+
+        val dotLive = findViewById<View>(R.id.dotLive)
+        ObjectAnimator.ofPropertyValuesHolder(
+            dotLive,
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.35f, 1f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.35f, 1f),
+            PropertyValuesHolder.ofFloat(View.ALPHA, 1f, 0.45f, 1f)
+        ).apply {
+            duration = 2000
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
+    }
+
+    private fun applyGradientText(tv: TextView) {
+        tv.post {
+            val width = tv.paint.measureText(tv.text.toString())
+            if (width > 0f) {
+                tv.paint.shader = LinearGradient(
+                    0f, 0f, width, 0f,
+                    intArrayOf(
+                        Color.parseColor("#A79BFF"),
+                        Color.parseColor("#C77DF0"),
+                        Color.parseColor("#F27BC0")
+                    ),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+                tv.invalidate()
+            }
         }
     }
 
