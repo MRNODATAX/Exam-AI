@@ -155,12 +155,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSplash() {
         val splash = findViewById<View>(R.id.splashOverlay)
-        splash.setOnClickListener { splash.visibility = View.GONE }
+        val nameGate = findViewById<View>(R.id.nameGateOverlay)
+        val etUserName = findViewById<EditText>(R.id.etUserName)
+        val btnEnterApp = findViewById<Button>(R.id.btnEnterApp)
+        val tvHeaderGreeting = findViewById<TextView>(R.id.tvHeaderGreeting)
+
+        val savedName = PrefsManager.getUserName(this)
+        if (savedName.isNotEmpty()) {
+            tvHeaderGreeting.text = "by nodata · Halo, $savedName"
+        }
+
+        btnEnterApp.setOnClickListener {
+            val name = etUserName.text.toString().trim()
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Masukkan nama terlebih dahulu", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            PrefsManager.saveUserName(this, name)
+            tvHeaderGreeting.text = "by nodata · Halo, $name"
+            nameGate.visibility = View.GONE
+        }
+
+        fun finishSplash() {
+            splash.visibility = View.GONE
+            if (PrefsManager.getUserName(this).isEmpty()) {
+                nameGate.visibility = View.VISIBLE
+            }
+        }
+
+        splash.setOnClickListener { finishSplash() }
         splash.postDelayed({
             splash.animate().alpha(0f).setDuration(350).withEndAction {
-                splash.visibility = View.GONE
+                finishSplash()
             }.start()
-        }, 1100)
+        }, 1400)
     }
 
     private fun setupNavigation() {

@@ -112,7 +112,9 @@ class CropOverlayView(
         }
 
         val btnAskAi = Button(context).apply {
-            text = "🤖 Tanya AI"
+            text = "Tanya AI"
+            setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat, 0, 0, 0)
+            compoundDrawablePadding = 12
             setTextColor(Color.WHITE)
             setBackgroundResource(R.drawable.bg_btn_gradient)
             setPadding(28, 12, 28, 12)
@@ -120,7 +122,9 @@ class CropOverlayView(
         }
 
         val btnGoogle = Button(context).apply {
-            text = "🔍 Cari Google"
+            text = "Cari Google"
+            setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0)
+            compoundDrawablePadding = 12
             setTextColor(Color.WHITE)
             setBackgroundResource(R.drawable.bg_input)
             setPadding(28, 12, 28, 12)

@@ -45,6 +45,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvHeaderGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="serif"
@@ -633,6 +634,72 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Name Gate (#sName, first launch) -->
+    <LinearLayout
+        android:id="@+id/nameGateOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:background="@drawable/bg_logo_box"
+            android:padding="12dp"
+            android:src="@drawable/ic_ai_assistant" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:fontFamily="serif"
+            android:text="ExamAI ✦"
+            android:textColor="@color/txt"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Masukkan nama Anda untuk memulai"
+            android:textColor="@color/dim"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etUserName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_input"
+            android:gravity="center"
+            android:hint="Nama Anda"
+            android:inputType="textPersonName"
+            android:paddingHorizontal="14dp"
+            android:singleLine="true"
+            android:textColor="@color/txt"
+            android:textColorHint="@color/dim"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnEnterApp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_btn_gradient"
+            android:text="Masuk"
+            android:textAllCaps="false"
+            android:textColor="@color/txt"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <!-- Splash Screen (#sp) -->
     <LinearLayout
         android:id="@+id/splashOverlay"
@@ -669,6 +736,15 @@
             android:textColor="@color/dim"
             android:textSize="12sp"
             android:textStyle="italic" />
+
+        <ProgressBar
+            android:id="@+id/splashProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="120dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="18dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/acc" />
     </LinearLayout>
 
 </FrameLayout>

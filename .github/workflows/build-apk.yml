@@ -30,21 +30,24 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Build Debug APK
+      - name: Build APK
         run: gradle assembleDebug --no-daemon
+
+      - name: Rename APK to Exam-AI.apk
+        run: cp app/build/outputs/apk/debug/Exam-AI-debug.apk Exam-AI.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Exam-AI-apk
-          path: app/build/outputs/apk/debug/Exam-AI-debug.apk
+          name: Exam-AI
+          path: Exam-AI.apk
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0-debug
-          name: Exam-AI APK
-          files: app/build/outputs/apk/debug/Exam-AI-debug.apk
-          prerelease: true
+          tag_name: v1.0
+          name: Exam-AI
+          files: Exam-AI.apk
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

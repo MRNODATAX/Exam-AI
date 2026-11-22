@@ -22,6 +22,7 @@ object PrefsManager {
     private const val KEY_BASE_URL = "ai_base_url"
     private const val KEY_OPACITY = "floating_opacity"
     private const val KEY_HISTORY = "answer_history"
+    private const val KEY_USER_NAME = "user_name"
 
     const val PROVIDER_GEMINI = "GEMINI"
     const val PROVIDER_OMNIROUTE = "OMNIROUTE"
@@ -126,5 +127,13 @@ object PrefsManager {
 
     fun clearHistory(context: Context) {
         getPrefs(context).edit().remove(KEY_HISTORY).apply()
+    }
+
+    fun saveUserName(context: Context, name: String) {
+        getPrefs(context).edit().putString(KEY_USER_NAME, name.trim()).apply()
+    }
+
+    fun getUserName(context: Context): String {
+        return getPrefs(context).getString(KEY_USER_NAME, "") ?: ""
     }
 }
