@@ -51,7 +51,7 @@ class CropOverlayView(
     private var endY = 0f
     private var hasSelection = false
 
-    private val actionBar: LinearLayout
+    private lateinit var actionBar: LinearLayout
 
     private val drawView = object : View(context) {
         override fun onDraw(canvas: Canvas) {
