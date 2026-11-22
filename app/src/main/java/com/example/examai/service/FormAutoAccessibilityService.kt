@@ -1,7 +1,10 @@
 package com.example.examai.service
 
 import android.accessibilityservice.AccessibilityService
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.view.Display
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
@@ -200,5 +203,32 @@ class FormAutoAccessibilityService : AccessibilityService() {
 
     private fun showToast(message: String) {
         Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+    }
+
+    fun captureScreenBitmap(onResult: (Bitmap?) -> Unit) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            showToast("Screenshot otomatis butuh Android 11+")
+            onResult(null)
+            return
+        }
+        takeScreenshot(
+            Display.DEFAULT_DISPLAY,
+            mainExecutor,
+            object : TakeScreenshotCallback {
+                override fun onSuccess(screenshot: ScreenshotResult) {
+                    val hardwareBuffer = screenshot.hardwareBuffer
+                    val colorSpace = screenshot.colorSpace
+                    val bitmap = Bitmap.wrapHardwareBuffer(hardwareBuffer, colorSpace)
+                        ?.copy(Bitmap.Config.ARGB_8888, false)
+                    hardwareBuffer.close()
+                    onResult(bitmap)
+                }
+
+                override fun onFailure(errorCode: Int) {
+                    showToast("Gagal mengambil screenshot (kode $errorCode)")
+                    onResult(null)
+                }
+            }
+        )
     }
 }

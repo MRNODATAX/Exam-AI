@@ -65,6 +65,17 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
+        <Button
+            android:id="@+id/btnMiniScreenshotGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_input"
+            android:text="📷 Screenshot &amp; Cari di Google"
+            android:textAllCaps="false"
+            android:textColor="@color/txt"
+            android:textSize="11.5sp" />
+
         <TextView
             android:id="@+id/tvMiniChatReply"
             android:layout_width="match_parent"
@@ -108,6 +119,51 @@
                 android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
+    </LinearLayout>
+
+    <!-- Floating Google WebView -->
+    <LinearLayout
+        android:id="@+id/layoutFloatingWebView"
+        android:layout_width="310dp"
+        android:layout_height="360dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_card"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Google Search (Floating)"
+                android:textColor="@color/txt"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnCloseWebView"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:gravity="center"
+                android:text="✕"
+                android:textColor="@color/dim"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <WebView
+            android:id="@+id/webViewGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <!-- Floating FAB (#fab 56x56) -->

@@ -36,15 +36,15 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ExamAI-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Exam-AI-apk
+          path: app/build/outputs/apk/debug/Exam-AI-debug.apk
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0-debug
-          name: ExamAI Debug APK
-          files: app/build/outputs/apk/debug/app-debug.apk
+          name: Exam-AI APK
+          files: app/build/outputs/apk/debug/Exam-AI-debug.apk
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

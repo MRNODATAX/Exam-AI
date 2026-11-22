@@ -47,6 +47,56 @@ object AiApiHelper {
         )
     }
 
+    suspend fun extractQuestionFromImage(context: Context, base64Jpeg: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            val apiKey = PrefsManager.getApiKey(context)
+            if (apiKey.isBlank()) {
+                return@withContext Result.failure(IllegalStateException("API Key belum diisi di Pengaturan."))
+            }
+            val model = PrefsManager.getModel(context).let {
+                if (PrefsManager.getProvider(context) == PrefsManager.PROVIDER_GEMINI) it else "gemini-2.5-flash"
+            }
+            val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+            val payload = JSONObject().apply {
+                put("contents", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("role", "user")
+                        put("parts", JSONArray().apply {
+                            put(JSONObject().put("text", "Baca teks pertanyaan utama dari gambar layar ini untuk dicari di Google. Balas HANYA dengan kalimat pertanyaan singkatnya saja tanpa penjelasan."))
+                            put(JSONObject().put("inlineData", JSONObject().apply {
+                                put("mimeType", "image/jpeg")
+                                put("data", base64Jpeg)
+                            }))
+                        })
+                    })
+                })
+            }
+            val request = Request.Builder()
+                .url(url)
+                .post(payload.toString().toRequestBody(JSON_MEDIA_TYPE))
+                .build()
+            return@withContext try {
+                client.newCall(request).execute().use { response ->
+                    val bodyStr = response.body?.string().orEmpty()
+                    if (!response.isSuccessful) {
+                        return@use Result.failure(RuntimeException("Vision HTTP ${response.code}: ${extractErrorMessage(bodyStr)}"))
+                    }
+                    val text = JSONObject(bodyStr).optJSONArray("candidates")
+                        ?.optJSONObject(0)
+                        ?.optJSONObject("content")
+                        ?.optJSONArray("parts")
+                        ?.optJSONObject(0)
+                        ?.optString("text", "")
+                        ?.trim()
+                        .orEmpty()
+                    if (text.isBlank()) Result.failure(RuntimeException("Teks tidak terbaca dari gambar."))
+                    else Result.success(text)
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
     private suspend fun sendPrompt(
         context: Context,
         systemPrompt: String,
